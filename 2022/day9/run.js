@@ -1,42 +1,63 @@
 const readInput = require('../utils/readInput')
 
-const input = readInput(__dirname, 'inputTst.txt')
+const input = readInput(__dirname, 'input.txt')
 const moves = input.split('\n')
-moves.pop();
+moves.pop()
 
-console.log(moves)
+// console.log(moves)
 
-let coordsH = { x: 0, y: 0 }
-let coordsT = { x: 0, y: 0 }
-const visited = new Set();
+const coords = [...Array(10).keys()].map(() => ({ x: 0, y: 0 }))
+
+const visited = new Set()
+visited.add(`${coords[1].x}x${coords[1].y}`)
+
+const visited9th = new Set()
+visited9th.add(`${coords[9].x}x${coords[9].y}`)
 
 function moveH (direction) {
-  if (direction === 'U') coordsH.y += 1;
-  else if (direction === 'D') coordsH.y -= 1;
-  else if (direction === 'R') coordsH.x += 1;
-  else if (direction === 'L') coordsH.x -= 1;
+  if (direction === 'U') coords[0].y += 1
+  else if (direction === 'D') coords[0].y -= 1
+  else if (direction === 'R') coords[0].x += 1
+  else if (direction === 'L') coords[0].x -= 1
 }
 
-function moveT () {
-  const diff = { x: coordsH.x - coordsT.x, y: coordsH.y - coordsT.y}
-  console.log('diff', diff)
-  if (diff.y === 0 && diff.x > 1) coordsT.x += 1;
-  if (diff.y === 0 && diff.x < 1) coordsT.x -= 1;
-  if (diff.x === 0 && diff.y > 1) coordsT.y += 1;
-  if (diff.x === 0 && diff.y < 1) coordsT.y -= 1;
-  visited.add(`${coordsT.x}x${coordsT.y}`)
+function moveT (prev, next, isLog) {
+  if(isLog) console.log(prev, ' -> ', next)
+  const diff = { x: prev.x - next.x, y: prev.y - next.y }
+  if (Math.abs(diff.y) >= 0 && Math.abs(diff.x) > 1) {
+    if(isLog) console.log('diff', diff)
+    next.x += Math.sign(diff.x) * (Math.abs(diff.x) - 1)
+    next.y += Math.sign(diff.y) * Math.min(Math.abs(diff.y), 1)
+    if(isLog) console.log(prev, ' -> ', next)
+  } else if (Math.abs(diff.x) >= 0 && Math.abs(diff.y) > 1) {
+    if(isLog) console.log('diff', diff)
+    next.y += Math.sign(diff.y) * (Math.abs(diff.y) - 1)
+    next.x += Math.sign(diff.x) * Math.min(Math.abs(diff.x), 1)
+    if(isLog) console.log(prev, ' -> ', next)
+  }
 }
 
 
-moves.forEach((m) => {
-  const [direction, nrOfSteps] = m.split(' ').map((v, i) => i === 1 ? Number(v) : v);
-  console.log(direction, nrOfSteps);
-  for (let i=0; i<nrOfSteps; i++) {
-    moveH(direction)
-    console.log('H', coordsH)
-    moveT();
-    console.log('T', coordsT)
+moves.forEach((m, mi) => {
+  const [direction, nrOfSteps] = m.split(' ').map((v, i) => i === 1 ? Number(v) : v)
+  // console.log();
+  // console.log(direction, nrOfSteps)
+  for (let i = 0; i < nrOfSteps; i++) {
+    coords.forEach((c, ci) => {
+      // console.log([ci])
+      if (ci === 0) {
+        moveH(direction)
+        return;
+      }
+      moveT(coords[ci-1], coords[ci]);
+    })
+    // console.log();
+    // console.log('T', coordsT)
+    visited.add(`${coords[1].x}x${coords[1].y}`)
+    visited9th.add(`${Math.floor(coords[9].x)}x${Math.floor(coords[9].y)}`)
   }
 })
 
-console.log(visited)
+console.log('part1', visited.size)
+// console.log(visited9th);
+console.log('part2', visited9th.size)
