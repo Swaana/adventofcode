@@ -63,16 +63,6 @@ grid.pop()
 
 grid.forEach((row, y) => {
   row.forEach((position, x) => {
-    const xFromEnd = endPosition.location.x - x;
-    const yFromEnd = endPosition.location.y - y;
-    if (xFromEnd === 0) {
-      position.distanceToEnd = Math.abs(yFromEnd);
-    } else if (yFromEnd === 0) {
-      position.distanceToEnd = Math.abs(xFromEnd);
-    } else {
-      position.distanceToEnd = Math.sqrt(Math.pow(endPosition.location.x - x, 2) + Math.pow(endPosition.location.y - y, 2))
-    }
-
     if (x > 0 && position.elevation + 1 >= grid[y][x - 1].elevation) {
       position.nodes.push(grid[y][x - 1])
     }
