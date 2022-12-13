@@ -61,27 +61,37 @@ const grid = input
     }))
 grid.pop()
 
+// for each node set the nodes that can reach it
 grid.forEach((row, y) => {
   row.forEach((position, x) => {
-    if (x > 0 && position.elevation + 1 >= grid[y][x - 1].elevation) {
+    if (x > 0 && grid[y][x - 1].elevation + 1 >= position.elevation) {
       position.nodes.push(grid[y][x - 1])
     }
-    if (y > 0 && position.elevation + 1 >= grid[y - 1][x].elevation) {
+    if (y > 0 && grid[y - 1][x].elevation + 1 >= position.elevation) {
       position.nodes.push(grid[y - 1][x])
     }
-    if (x < grid[y].length - 1 && position.elevation + 1 >= grid[y][x + 1].elevation) {
+    if (x < grid[y].length - 1 && grid[y][x + 1].elevation + 1 >= position.elevation) {
       position.nodes.push(grid[y][x + 1])
     }
-    if (y < grid.length - 1 && position.elevation + 1 >= grid[y + 1][x].elevation) {
+    if (y < grid.length - 1 && grid[y + 1][x].elevation + 1 >= position.elevation) {
       position.nodes.push(grid[y + 1][x])
     }
   })
 })
 
 // OK lets visit all the nodes.
-startPosition.shortestPath = [];
-startPosition.visit();
-console.log('part1', endPosition.shortestPath.length)
-// console.log(endPosition.nodes)
-// console.log('part1', path.length - 1)
-// console.log(grid.map(line => line.map(p => p.distanceToEnd)))
+endPosition.shortestPath = [];
+endPosition.visit();
+
+// find node at a with shortest path to end
+let startingA = startPosition;
+grid.forEach((row) => {
+  row.forEach((position) => {
+    if (position.char === 'a' && position.shortestPath && position.shortestPath.length < startingA.shortestPath.length) {
+      startingA = position;
+    }
+  });
+});
+
+console.log('part1', startPosition.shortestPath.length)
+console.log('part2', startingA.shortestPath.length)
