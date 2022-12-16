@@ -53,7 +53,6 @@ function mergeAll (range) {
   while (range.length > 1 && hasMerge) {
     hasMerge = false;
     for (let i = range.length - 1; i > 0; i--) {
-      // console.log('merge', range[i - 1], range[i])
       if (merge(range[i - 1], range[i])) {
         range.splice(i, 1)
         hasMerge = true
