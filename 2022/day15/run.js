@@ -1,4 +1,5 @@
 const readInput = require('../utils/readInput')
+const { sortByNumber } = require('../utils/sortUtils')
 const input = readInput(__dirname, 'input.txt')
 
 const lines = input.split('\n')
@@ -49,16 +50,15 @@ function merge (a, b) {
 }
 
 function mergeAll (range) {
-  let hasMerge = true
-  while (range.length > 1 && hasMerge) {
-    hasMerge = false;
-    for (let i = range.length - 1; i > 0; i--) {
-      if (merge(range[i - 1], range[i])) {
-        range.splice(i, 1)
-        hasMerge = true
-      }
+  const result = range.shift();
+  while (range.length > 0) {
+    if (merge(result, range[0])) {
+      range.shift();
+    } else {
+      return [result, ...range]
     }
   }
+  return [result];
 }
 
 function pointsOnRow (rowNr) {
@@ -66,19 +66,23 @@ function pointsOnRow (rowNr) {
   pairs.forEach(p => {
     const distance = p.D - Math.abs(p.S.y - rowNr)
     if (distance >= 0) {
-      let merged = false
-      const foundRange = [p.S.x - distance, p.S.x + distance]
-      range.forEach(r => {
-        merged = merge(r, foundRange)
-      })
-      if (!merged) {
-        range.push(foundRange)
-      }
+      range.push([p.S.x - distance, p.S.x + distance])
     }
   })
 
-  mergeAll(range)
-  return range
+  // mergeAll(range)
+  return range.sort((a, b) => sortByNumber(a[0], b[0]))
+}
+
+function findFirstEmptyPoint(rowToTest) {
+  for(let i=0; i <= rowToTest * 2; i++) {
+    const range = mergeAll(pointsOnRow(i));
+    if (range.length > 1
+      || range[0] >= 0
+      || range[1] <= rowToTest * 2) {
+      return { x: range[0][1] + 1, y: i }
+    }
+  }
 }
 
 const rowToTest = pairs.length > 15 ? 2000000 : 10
@@ -93,14 +97,8 @@ const beaconsInRowAndInRange = pairs
     return result
   }, [])
 
-const amount = range.reduce((sum, r) => sum = r[1] - r[0] + 1, 0) - beaconsInRowAndInRange.length
-console.log('part1', amount)
-for(let i=0; i <= rowToTest * 2; i++) {
-  const range = pointsOnRow(i);
-  if (range.length === 2
-    || range[0] >= 0
-    || range[1] <= rowToTest * 2) {
-    console.log(i, range)
-  }
-}
-console.log('part2', pointsOnRow(rowToTest * 2))
+const pointsCovered = mergeAll(range).reduce((sum, r) => sum = r[1] - r[0], 0) - beaconsInRowAndInRange.length
+const distressPoint = findFirstEmptyPoint(rowToTest);
+
+console.log('part1', pointsCovered)
+console.log('part2', distressPoint.x * 4000000 + distressPoint.y)
