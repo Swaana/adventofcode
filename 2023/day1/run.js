@@ -36,30 +36,30 @@ function numberFromWord(word) {
     }
 }
 
-function getFirstNumber(code) {
+function getFirstNumber(code, withWords) {
     for (let i=0;i<code.length;i++) {
         if (!isNaN(code[i])) {
             return code[i];
         }
-        if (!isNaN(numberFromWord(code.substring(i)))) {
+        if (withWords && !isNaN(numberFromWord(code.substring(i)))) {
             return numberFromWord(code.substring(i));
         }
     }
 }
 
-function getLastNumber(code) {
+function getLastNumber(code, withWords) {
     for (let i=code.length - 1;i>=0;i--) {
         if (!isNaN(code[i])) {
             return code[i];
         }
-        if (!isNaN(numberFromWord(code.substring(i)))) {
+        if (withWords && !isNaN(numberFromWord(code.substring(i)))) {
             return numberFromWord(code.substring(i));
         }
     }
 }
 
 const calibrationValuesPart1 = codes.map((code) => Number(`${getFirstNumber(code)}${getLastNumber(code)}`))
-const calibrationValuesPart2 = codes2.map((code) => Number(`${getFirstNumber(code)}${getLastNumber(code)}`))
+const calibrationValuesPart2 = codes2.map((code) => Number(`${getFirstNumber(code, true)}${getLastNumber(code, true)}`))
 
 console.log('part1', calibrationValuesPart1.reduce((acc, cal) => acc + cal, 0))
 console.log('part2', calibrationValuesPart2.reduce((acc, cal) => acc + cal, 0))
