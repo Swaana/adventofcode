@@ -4,7 +4,7 @@
 // ----------------------------------------------------------------------------
 
 // -------------------------------- Imports -----------------------------------
-const readInput = require('../utils/readInput')
+const readInput = require('../../utils/readInput')
 // const { ____ } = require('lodash');
 
 // Read in the contents of the data file and store it as an array of strings

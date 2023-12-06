@@ -1,4 +1,4 @@
-const readInput = require('../utils/readInput')
+const readInput = require('../../utils/readInput')
 const input = readInput(__dirname, 'input.txt').replace('\n', '')
 
 const directions = {

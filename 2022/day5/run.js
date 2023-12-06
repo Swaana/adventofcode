@@ -1,4 +1,4 @@
-const readInput = require('../utils/readInput')
+const readInput = require('../../utils/readInput')
 
 const input = readInput(__dirname, 'input.txt')
 const [cargo, movements] = input.split('\n\n').map(i => i.split('\n'))

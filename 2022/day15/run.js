@@ -1,5 +1,5 @@
-const readInput = require('../utils/readInput')
-const { sortByNumber } = require('../utils/sortUtils')
+const readInput = require('../../utils/readInput')
+const { sortByNumber } = require('../../utils/sortUtils')
 const input = readInput(__dirname, 'input.txt')
 
 const lines = input.split('\n')
