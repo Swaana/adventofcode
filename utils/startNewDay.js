@@ -25,7 +25,7 @@ if (!fs.existsSync(runJsFile)) {
     fs.writeFileSync(runJsFile, `
 const readInput = require('../../utils/readInput');
 
-const input = readInput(__dirname, 'input.txt');
+const input = readInput(__dirname, 'inputTst.txt');
 
 const lines = input.split('\\n').filter(l => !!l);
 
