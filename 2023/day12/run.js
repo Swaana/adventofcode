@@ -1,6 +1,7 @@
 const readInput = require('../../utils/readInput');
+const runWithCache = require("../../utils/memoize");
 
-const input = readInput(__dirname, 'inputTst.txt');
+const input = readInput(__dirname, 'input.txt');
 
 const lines = input.split('\n').filter(l => !!l);
 
@@ -10,84 +11,69 @@ const rows = lines.map((line) => {
     const config = configPart.split(',').map(Number);
 
     return {
-        springs: springsPart.split(''),
+        springs: springsPart,
         config,
     }
 })
 
 // console.log(rows)
-let found = [];
-function check(index, springs, config, damageLength, damageIndex) {
-    // console.log('checking', index, springs.join(''), damageLength, damageIndex, config)
-    if (index === springs.length) {
-        const dmgs = springs.join('').match(/#+/g)
-        if (!dmgs || dmgs.length !== config.length) {
-            return;
+const countOptions = runWithCache(function (springs, config) {
+    if (springs.length === 0) {
+        if (config.length === 0) {
+            return 1;
         }
-        for(let i=0;i<dmgs.length;i++) {
-            if (dmgs[i].length !== config[i]) {
-                return;
+        return 0;
+    }
+
+    if (config.length === 0) {
+        for (let i = 0; i < springs.length; i++) {
+            if (springs[i] === "#") {
+                return 0;
             }
         }
-        found.push(springs.join(''))
-        // console.log('found', springs.join(''), springs.join('').match(/#+/g))
-        return;
-    }
-    const current = springs[index];
-
-    if (current === '#') {
-        if (damageLength && config[damageIndex] === damageLength) {
-            return;
-        }
-        check(index + 1, springs, config, damageLength + 1, damageIndex)
+        return 1;
     }
 
-    if (current === '.') {
-        if (damageLength && config[damageIndex] !== damageLength) {
-            return;
-        }
-        if (damageLength) {
-            check(index + 1, springs, config, 0, damageIndex + 1)
-        } else {
-            check(index + 1, springs, config, 0, damageIndex)
-        }
+    if (springs.length < config.reduce((sum, c) => sum + c, 0) + config.length - 1) {
+        // not enough springs left to fit config
+        return 0;
     }
 
-    if (current === '?') {
-        // try it as # first, and then as .
-        if (config[damageIndex] > damageLength) {
-            springs[index] = '#';
-            check(index + 1, springs, config, damageLength + 1, damageIndex)
-        }
-        if (damageLength && config[damageIndex] !== damageLength) {
-            springs[index] = '?';
-            return;
-        }
-        springs[index] = '.';
-        if (damageLength) {
-            check(index + 1, springs, config, 0, damageIndex + 1)
-        } else {
-            check(index + 1, springs, config, 0, damageIndex)
-        }
-        springs[index] = '?';
+    if (springs[0] === '.') {
+        return countOptions(springs.slice(1), config);
     }
-}
 
+    if (springs[0] === '#') {
+      const [dmg, ...restConfig] = config;
+        for (let i = 0; i < dmg; i++) {
+            if (springs[i] === ".") {
+                return 0;
+            }
+        }
+        if (springs[dmg] === "#") {
+            return 0;
+        }
+
+        return countOptions(springs.slice(dmg + 1), restConfig);
+    }
+    return (
+        countOptions("#" + springs.slice(1), config) +
+        countOptions("." + springs.slice(1), config)
+    );
+});
+
+let part1 = 0
 rows.forEach(row => {
-    check(0, row.springs, row.config, 0, 0)
+    part1 += countOptions(row.springs, row.config)
 })
 
-// console.log(found, found.length)
-const part1 = found.length;
-
-found = [];
-rows.forEach((row, i) => {
-    console.log('checking row', i)
-    check(0,
-        [...row.springs, '?', ...row.springs, '?', ...row.springs, '?', ...row.springs, '?', ...row.springs],
-        [...row.config, ...row.config, ...row.config, ...row.config, ...row.config], 0, 0)
+let part2 = 0;
+rows.forEach(({ springs, config}) => {
+    part2 += countOptions(
+        [springs, springs, springs, springs, springs].join('?'),
+        [...config, ...config, ...config, ...config, ...config],
+    )
 })
 
-const part2 = found.length;
 console.log('part1', part1)
 console.log('part2', part2)
