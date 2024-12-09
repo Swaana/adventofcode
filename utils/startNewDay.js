@@ -23,11 +23,17 @@ if (!fs.existsSync(dayFolder)) {
 if (!fs.existsSync(runJsFile)) {
     // Create run.js file
     fs.writeFileSync(runJsFile, `
+console.time('part1')
+console.time('part2')
+
 const readInput = require('../../utils/readInput');
 
 const input = readInput(__dirname, 'inputTst.txt');
 
 const lines = input.split('\\n').filter(l => !!l);
+
+console.timeEnd('part1')
+console.timeEnd('part2')
 
 // console.log('part1', part1)
 // console.log('part2', part2)
