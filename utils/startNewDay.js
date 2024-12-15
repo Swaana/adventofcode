@@ -32,11 +32,11 @@ const input = readInput(__dirname, 'inputTst.txt');
 
 const lines = input.split('\\n').filter(l => !!l);
 
-console.timeEnd('part1')
-console.timeEnd('part2')
-
 // console.log('part1', part1)
+console.timeEnd('part1')
+
 // console.log('part2', part2)
+console.timeEnd('part2')
 `);
 } else {
     console.error(`Skipping: ${runJsFile} already exists`);
